@@ -84,25 +84,34 @@ def get_latest_release():
 
 def download_and_update(download_url):
     try:
+        print("Downloading update...")
         response = requests.get(download_url)
         if response.status_code == 200:
+            # Backup current version
+            if os.path.exists("WebhookManager.exe"):
+                backup_path = "WebhookManager.old.exe"
+                shutil.copy2("WebhookManager.exe", backup_path)
+                print("Created backup of current version")
+            
+            # Extract and update
+            print("Extracting update...")
             with ZipFile(BytesIO(response.content)) as zip_file:
-                if os.path.exists("WebhookManager.exe"):
-                    shutil.copy2("WebhookManager.exe", "WebhookManager.old.exe")
-                
                 for file in zip_file.namelist():
                     if file.endswith('.exe'):
                         with open("WebhookManager.exe", 'wb') as f:
                             f.write(zip_file.read(file))
-                
-                if os.path.exists("WebhookManager.old.exe"):
-                    os.remove("WebhookManager.old.exe")
-                
-                print("Update successful!")
-                return True
+                            print("Update file written successfully")
+            
+            # Clean up backup if successful
+            if os.path.exists(backup_path):
+                os.remove(backup_path)
+                print("Update successful - removed backup")
+            return True
     except Exception as e:
-        print(f"Update failed: {str(e)}")
+        print(f"Update error: {str(e)}")
+        # Restore backup if update failed
         if os.path.exists("WebhookManager.old.exe"):
+            print("Update failed - restoring backup")
             shutil.copy2("WebhookManager.old.exe", "WebhookManager.exe")
             os.remove("WebhookManager.old.exe")
     return False
@@ -110,30 +119,38 @@ def download_and_update(download_url):
 def main():
     print("Checking for updates...")
     log_update_check()
+    
     latest = get_latest_release()
+    if not latest:
+        print("Failed to check for updates")
+        return
     
-    if latest:
-        try:
-            if version.parse(latest['tag_name']) > version.parse(CURRENT_VERSION):
-                print(f"New version available: {latest['tag_name']}")
-                print(f"Changes:\n{latest['body']}")
-                
-                choice = input("Update now? (y/n): ").lower()
-                if choice == 'y':
-                    for asset in latest.get('assets', []):
-                        if asset['name'].endswith('.zip'):
-                            if download_and_update(asset['browser_download_url']):
-                                print("Restarting application...")
-                                if os.path.exists("WebhookManager.exe"):
-                                    os.execl(sys.executable, sys.executable, "WebhookManager.exe")
-                                else:
-                                    print("Error: WebhookManager.exe not found after update")
-                            break
-            else:
-                print("No updates available.")
-        except Exception as e:
-            print(f"Version comparison error: {str(e)}")
+    try:
+        latest_version = version.parse(latest['tag_name'].lstrip('v'))
+        current_version = version.parse(CURRENT_VERSION)
+        
+        if latest_version > current_version:
+            print(f"New version available: {latest['tag_name']}")
+            print("Changes:")
+            print(latest['body'])
+            
+            choice = input("Update now? (y/n): ").lower()
+            if choice == 'y':
+                for asset in latest.get('assets', []):
+                    if asset['name'].endswith('.zip'):
+                        if download_and_update(asset['browser_download_url']):
+                            print("Update complete - restarting application...")
+                            if os.path.exists("WebhookManager.exe"):
+                                os.execl(sys.executable, sys.executable, "WebhookManager.exe")
+                            else:
+                                print("Error: WebhookManager.exe not found after update")
+                        break
+        else:
+            print(f"You're running the latest version ({CURRENT_VERSION})")
+    except Exception as e:
+        print(f"Error during update process: {str(e)}")
     
+    # Start main application
     if os.path.exists("WebhookManager.exe"):
         try:
             os.startfile("WebhookManager.exe")
@@ -141,6 +158,7 @@ def main():
             print(f"Error starting WebhookManager.exe: {str(e)}")
     else:
         print("Error: WebhookManager.exe not found")
+    
     sys.exit()
 
 if __name__ == "__main__":
