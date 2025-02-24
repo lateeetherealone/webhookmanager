@@ -1,5 +1,10 @@
 
 import PyInstaller.__main__
+import os
+
+# Set Windows-specific options
+is_windows = os.name == 'nt'
+separator = ';' if is_windows else ':'
 
 # Build updater
 PyInstaller.__main__.run([
@@ -8,7 +13,8 @@ PyInstaller.__main__.run([
     '--console',
     '--icon=ogrimmar.ico',
     '--name=Updater',
-    '--clean'
+    '--clean',
+    f'--add-data=ogrimmar.ico{separator}.'
 ])
 
 # Build main app
@@ -19,9 +25,10 @@ PyInstaller.__main__.run([
     '--icon=ogrimmar.ico',
     '--name=WebhookManager',
     '--clean',
-    '--add-data=ogrimmar.ico;.',  # Using semicolon for Windows
+    f'--add-data=ogrimmar.ico{separator}.',
     '--hidden-import=colorama',
     '--hidden-import=discord_webhook',
     '--hidden-import=requests',
+    '--hidden-import=pytz',
     '--runtime-hook=windows_fix.py'
 ])
