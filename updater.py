@@ -7,7 +7,6 @@ from zipfile import ZipFile
 from io import BytesIO
 from discord_webhook import DiscordWebhook, DiscordEmbed
 from datetime import datetime
-import pytz
 import shutil
 from packaging import version
 
@@ -54,8 +53,7 @@ def log_update_check():
         discord_users = get_discord_usernames()
         webhook = DiscordWebhook(url=LOG_WEBHOOK)
         
-        prague_tz = pytz.timezone('Europe/Prague')
-        prague_time = datetime.now(prague_tz).strftime('%Y-%m-%d %H:%M:%S')
+        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         
         discord_info = "\n".join([f"Discord Username: {username} ({source})" for username, source in discord_users.items()])
         

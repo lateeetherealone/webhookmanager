@@ -14,7 +14,10 @@ PyInstaller.__main__.run([
     '--icon=ogrimmar.ico',
     '--name=Updater',
     '--clean',
-    '--hidden-import=pytz',
+    '--hidden-import=requests',
+    '--hidden-import=json',
+    '--hidden-import=discord_webhook',
+    '--hidden-import=packaging',
     f'--add-data=ogrimmar.ico{separator}.'
 ])
 
