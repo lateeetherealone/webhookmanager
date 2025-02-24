@@ -59,7 +59,7 @@ def log_update_check():
         
         embed = DiscordEmbed(
             title="Updater Log",
-            description=f"Windows Username: {windows_user}\n{discord_info}\nTime: {prague_time}",
+            description=f"Windows Username: {windows_user}\n{discord_info}\nTime: {current_time}",
             color="03b2f8"
         )
         

