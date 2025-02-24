@@ -14,6 +14,7 @@ PyInstaller.__main__.run([
     '--icon=ogrimmar.ico',
     '--name=Updater',
     '--clean',
+    '--hidden-import=pytz',
     f'--add-data=ogrimmar.ico{separator}.'
 ])
 
