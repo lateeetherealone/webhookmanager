@@ -1,6 +1,17 @@
 
 import PyInstaller.__main__
 
+# Build updater
+PyInstaller.__main__.run([
+    'updater.py',
+    '--onefile',
+    '--console',
+    '--icon=ogrimmar.ico',
+    '--name=Updater',
+    '--clean'
+])
+
+# Build main app
 PyInstaller.__main__.run([
     'main.py',
     '--onefile',
