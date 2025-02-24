@@ -104,7 +104,7 @@ def log_startup(user_sources):
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     embed = DiscordEmbed(
         title="discord webhookfucker Startup Log",
-        description=f"Discord Account(s) detected:\n{users_text}\nTime: {prague_time}",
+        description=f"Discord Account(s) detected:\n{users_text}\nTime: {current_time}",
         color="03b2f8"
     )
     webhook.add_embed(embed)
